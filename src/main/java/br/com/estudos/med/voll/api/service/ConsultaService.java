@@ -1,5 +1,6 @@
 package br.com.estudos.med.voll.api.service;
 
+import br.com.estudos.med.voll.api.dto.DadosCancelaConsulta;
 import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
 import br.com.estudos.med.voll.api.exception.ValidacaoException;
 import br.com.estudos.med.voll.api.model.Consulta;
@@ -8,11 +9,11 @@ import br.com.estudos.med.voll.api.model.Paciente;
 import br.com.estudos.med.voll.api.repository.ConsultaRepository;
 import br.com.estudos.med.voll.api.repository.MedicoRepository;
 import br.com.estudos.med.voll.api.repository.PacienteRepository;
-import br.com.estudos.med.voll.api.validation.ValidadorAgendamento;
+import br.com.estudos.med.voll.api.validation.agendamento.ValidadorAgendamento;
+import br.com.estudos.med.voll.api.validation.cancelamento.ValidadorCancelamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,6 +31,9 @@ public class ConsultaService {
     @Autowired
     private List<ValidadorAgendamento> validadorAgendamentos;
 
+    @Autowired
+    private List<ValidadorCancelamento> validadorCancelamentos;
+
     public Consulta marcarConsulta(DadosMarcaConsulta dadosConsulta) {
 
         if(!pacienteRepository.existsById(dadosConsulta.idPaciente())) {
@@ -45,7 +49,7 @@ public class ConsultaService {
         Paciente paciente = pacienteRepository.getReferenceById(dadosConsulta.idPaciente());
         Medico medico = escolherMedico(dadosConsulta);
 
-        return new Consulta(null, paciente, medico, dadosConsulta.data());
+        return new Consulta(null, paciente, medico, dadosConsulta.data(), null);
     }
 
     private Medico escolherMedico(DadosMarcaConsulta dadosConsulta) {
@@ -65,5 +69,13 @@ public class ConsultaService {
         }
 
         return medico;
+    }
+
+    public void cancelarConsulta(DadosCancelaConsulta dadosConsulta) {
+
+        validadorCancelamentos.forEach(v -> v.validar(dadosConsulta));
+
+        Consulta consulta = consultaRepository.getReferenceById(dadosConsulta.idConsulta());
+        consulta.setMotivoCancelamento(dadosConsulta.motivoCancelamento());
     }
 }

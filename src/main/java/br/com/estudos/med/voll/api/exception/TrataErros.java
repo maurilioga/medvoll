@@ -3,6 +3,7 @@ package br.com.estudos.med.voll.api.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -50,6 +51,11 @@ public class TrataErros {
     @ExceptionHandler(ValidacaoException.class)
     public ResponseEntity tratarErroValidacao(ValidacaoException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " +ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity tratarErroEnum(HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao converter requisição. Confira se os valores informados estão corretos.");
     }
 
     private record DadosErroValidacao(String campo, String mensagem) {

@@ -1,4 +1,4 @@
-package br.com.estudos.med.voll.api.validation;
+package br.com.estudos.med.voll.api.validation.agendamento;
 
 import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
 import br.com.estudos.med.voll.api.exception.ValidacaoException;
@@ -19,7 +19,7 @@ public class ValidaPacienteJaPossuiAgendamento implements ValidadorAgendamento{
         LocalDateTime primeiroHorario = dados.data().withHour(7);
         LocalDateTime ultimoHorario = dados.data().withHour(18);
 
-        if(consultaRepository.existsByPacienteIdAndHorarioBetween(dados.idPaciente(), primeiroHorario, ultimoHorario)) {
+        if(consultaRepository.existsByPacienteIdAndHorarioBetweenAndMotivoCancelamentoIsNull(dados.idPaciente(), primeiroHorario, ultimoHorario)) {
             throw new ValidacaoException("Paciente já possui consulta agendada para esse dia!");
         }
     }

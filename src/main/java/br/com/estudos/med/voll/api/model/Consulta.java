@@ -27,6 +27,9 @@ public class Consulta {
 
     private LocalDateTime horario;
 
+    @Enumerated(EnumType.STRING)
+    private MotivoCancelamentoConsulta motivoCancelamento;
+
     public Consulta(DadosMarcaConsulta dadosConsulta) {
 
     }
