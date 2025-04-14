@@ -6,6 +6,7 @@ import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
 import br.com.estudos.med.voll.api.model.Consulta;
 import br.com.estudos.med.voll.api.repository.ConsultaRepository;
 import br.com.estudos.med.voll.api.service.ConsultaService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/consulta")
+@SecurityRequirement(name = "bearer-key")
 public class ConsultaController {
 
     @Autowired

@@ -6,6 +6,7 @@ import br.com.estudos.med.voll.api.dto.DadosDetalhamentoPaciente;
 import br.com.estudos.med.voll.api.dto.DadosListagemPaciente;
 import br.com.estudos.med.voll.api.model.Paciente;
 import br.com.estudos.med.voll.api.repository.PacienteRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/paciente")
+@RequestMapping("/pacientes")
+@SecurityRequirement(name = "bearer-key")
 public class PacienteController {
 
     @Autowired
@@ -32,7 +34,7 @@ public class PacienteController {
         Paciente paciente = new Paciente(dadosPaciente);
         pacienteRepository.save(paciente);
 
-        var uri = uriBuilder.path("/paciente/{id}").buildAndExpand(paciente.getId()).toUri();
+        var uri = uriBuilder.path("/pacientes/{id}").buildAndExpand(paciente.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new DadosDetalhamentoPaciente(paciente));
     }
