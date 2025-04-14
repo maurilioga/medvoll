@@ -1,5 +1,6 @@
 package br.com.estudos.med.voll.api.controller;
 
+import br.com.estudos.med.voll.api.dto.DadosDetalhamentoConsulta;
 import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
 import br.com.estudos.med.voll.api.model.Consulta;
 import br.com.estudos.med.voll.api.repository.ConsultaRepository;
@@ -32,6 +33,6 @@ public class ConsultaController {
 
         var uri = uriBuilder.path("/consulta/{id}").buildAndExpand(consulta.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(consulta);
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoConsulta(consulta));
     }
 }

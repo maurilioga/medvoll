@@ -1,11 +1,14 @@
 package br.com.estudos.med.voll.api.service;
 
 import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
+import br.com.estudos.med.voll.api.exception.ValidacaoException;
 import br.com.estudos.med.voll.api.model.Consulta;
 import br.com.estudos.med.voll.api.model.Medico;
 import br.com.estudos.med.voll.api.model.Paciente;
+import br.com.estudos.med.voll.api.repository.ConsultaRepository;
 import br.com.estudos.med.voll.api.repository.MedicoRepository;
 import br.com.estudos.med.voll.api.repository.PacienteRepository;
+import br.com.estudos.med.voll.api.validation.ValidadorAgendamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,42 +24,46 @@ public class ConsultaService {
     @Autowired
     private PacienteRepository pacienteRepository;
 
+    @Autowired
+    private ConsultaRepository consultaRepository;
+
+    @Autowired
+    private List<ValidadorAgendamento> validadorAgendamentos;
+
     public Consulta marcarConsulta(DadosMarcaConsulta dadosConsulta) {
 
-        Paciente paciente = pacienteRepository.getReferenceById(dadosConsulta.paciente());
-        Medico medico;
-
-        if(dadosConsulta.medico() != null) {
-            medico = medicoRepository.getReferenceById(dadosConsulta.medico());
-        } else {
-            medico = medicoRepository.getReferenceById(2L);
+        if(!pacienteRepository.existsById(dadosConsulta.idPaciente())) {
+            throw new ValidacaoException("O paciente informado não existe!");
         }
 
-        List<Consulta> pacienteConsulta = paciente.getConsulta();
-        List<Consulta> medicoConsulta = medico.getConsulta();
-
-//        for(Consulta consulta : pacienteConsulta) {
-//            if (consulta.getPaciente().getId().equals(paciente.getId()) &&
-//                    consulta.getHorario().isEqual(dadosConsulta.horario())) {
-//                throw new IllegalArgumentException("Horário indisponível");
-//            }
-//        }
-//
-//        for(Consulta consulta : medicoConsulta) {
-//            if (consulta.getMedico().getId().equals(medico.getId()) &&
-//                    consulta.getHorario().isEqual(dadosConsulta.horario())) {
-//                throw new IllegalArgumentException("Horário indisponível");
-//            }
-//        }
-
-        if(!paciente.getAtivo()) {
-            throw new IllegalArgumentException("Paciente inativo!");
+        if(dadosConsulta.idMedico() != null && !medicoRepository.existsById(dadosConsulta.idMedico())) {
+            throw new ValidacaoException("O médico informado não existe!");
         }
 
-        if(!medico.getAtivo()) {
-            throw new IllegalArgumentException("Médico inativo!");
+        validadorAgendamentos.forEach(v -> v.validar(dadosConsulta));
+
+        Paciente paciente = pacienteRepository.getReferenceById(dadosConsulta.idPaciente());
+        Medico medico = escolherMedico(dadosConsulta);
+
+        return new Consulta(null, paciente, medico, dadosConsulta.data());
+    }
+
+    private Medico escolherMedico(DadosMarcaConsulta dadosConsulta) {
+
+        if(dadosConsulta.idMedico() != null) {
+            return medicoRepository.getReferenceById(dadosConsulta.idMedico());
         }
 
-        return new Consulta(null, paciente, medico, LocalDateTime.now());
+        if(dadosConsulta.especialidade() == null) {
+            throw new ValidacaoException("Especialidade não preenchida!");
+        }
+
+        Medico medico = medicoRepository.escolherMedicoAleatorioPorData(dadosConsulta.especialidade(), dadosConsulta.data());
+
+        if(medico == null) {
+            throw new ValidacaoException("Nenhum médico disponível!");
+        }
+
+        return medico;
     }
 }
