@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/consulta")
+@RequestMapping("/consultas")
 @SecurityRequirement(name = "bearer-key")
 public class ConsultaController {
 
@@ -32,7 +32,7 @@ public class ConsultaController {
         Consulta consulta = consultaService.marcarConsulta(dadosConsulta);
         consultaRepository.save(consulta);
 
-        var uri = uriBuilder.path("/consulta/{id}").buildAndExpand(consulta.getId()).toUri();
+        var uri = uriBuilder.path("/consultas/{id}").buildAndExpand(consulta.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new DadosDetalhamentoConsulta(consulta));
     }

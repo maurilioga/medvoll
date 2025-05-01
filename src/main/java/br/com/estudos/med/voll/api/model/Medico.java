@@ -33,7 +33,7 @@ public class Medico {
 
     private Boolean ativo;
 
-    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "medico", fetch = FetchType.EAGER)
     private List<Consulta> consulta = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

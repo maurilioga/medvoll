@@ -3,7 +3,6 @@ package br.com.estudos.med.voll.api.model;
 import br.com.estudos.med.voll.api.dto.DadosAtualizaPaciente;
 import br.com.estudos.med.voll.api.dto.DadosCadastroPaciente;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class Paciente {
 
     private Boolean ativo;
 
-    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.EAGER)
     private List<Consulta> consulta = new ArrayList<>();
 
     public Paciente(DadosCadastroPaciente dadosPaciente) {
@@ -62,7 +61,7 @@ public class Paciente {
         }
     }
 
-    public void exclui() {
+    public void excluir() {
 
         this.ativo = false;
     }

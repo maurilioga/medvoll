@@ -72,7 +72,7 @@ public class PacienteController {
     public ResponseEntity excluirPaciente(@PathVariable Long id) {
 
         Paciente paciente = pacienteRepository.getReferenceById(id);
-        paciente.exclui();
+        paciente.excluir();
 
         return ResponseEntity.noContent().build();
     }
