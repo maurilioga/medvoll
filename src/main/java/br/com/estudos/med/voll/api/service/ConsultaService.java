@@ -1,6 +1,7 @@
 package br.com.estudos.med.voll.api.service;
 
 import br.com.estudos.med.voll.api.dto.DadosCancelaConsulta;
+import br.com.estudos.med.voll.api.dto.DadosDetalhamentoConsulta;
 import br.com.estudos.med.voll.api.dto.DadosMarcaConsulta;
 import br.com.estudos.med.voll.api.exception.ValidacaoException;
 import br.com.estudos.med.voll.api.model.Consulta;
@@ -34,7 +35,7 @@ public class ConsultaService {
     @Autowired
     private List<ValidadorCancelamento> validadorCancelamentos;
 
-    public Consulta marcarConsulta(DadosMarcaConsulta dadosConsulta) {
+    public DadosDetalhamentoConsulta marcarConsulta(DadosMarcaConsulta dadosConsulta) {
 
         if(!pacienteRepository.existsById(dadosConsulta.idPaciente())) {
             throw new ValidacaoException("O paciente informado não existe!");
@@ -49,7 +50,10 @@ public class ConsultaService {
         Paciente paciente = pacienteRepository.getReferenceById(dadosConsulta.idPaciente());
         Medico medico = escolherMedico(dadosConsulta);
 
-        return new Consulta(null, paciente, medico, dadosConsulta.data(), null);
+        Consulta consulta = new Consulta(null, paciente, medico, dadosConsulta.data(), null);
+        consultaRepository.save(consulta);
+
+        return new DadosDetalhamentoConsulta(consulta);
     }
 
     private Medico escolherMedico(DadosMarcaConsulta dadosConsulta) {

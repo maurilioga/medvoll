@@ -29,12 +29,11 @@ public class ConsultaController {
     @Transactional
     public ResponseEntity marcarConsulta(@RequestBody @Valid DadosMarcaConsulta dadosConsulta, UriComponentsBuilder uriBuilder) {
 
-        Consulta consulta = consultaService.marcarConsulta(dadosConsulta);
-        consultaRepository.save(consulta);
+        DadosDetalhamentoConsulta dadosDetalhamentoConsulta = consultaService.marcarConsulta(dadosConsulta);
 
-        var uri = uriBuilder.path("/consultas/{id}").buildAndExpand(consulta.getId()).toUri();
+        var uri = uriBuilder.path("/consultas/{id}").buildAndExpand(dadosDetalhamentoConsulta.id()).toUri();
 
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoConsulta(consulta));
+        return ResponseEntity.created(uri).body(dadosDetalhamentoConsulta);
     }
 
     @DeleteMapping

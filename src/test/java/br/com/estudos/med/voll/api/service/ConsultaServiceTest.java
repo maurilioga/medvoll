@@ -63,6 +63,7 @@ class ConsultaServiceTest {
 
         given(pacienteRepository.existsById(dadosMarcaConsulta.idPaciente())).willReturn(true);
         given(medicoRepository.existsById(dadosMarcaConsulta.idMedico())).willReturn(true);
+        given(medicoRepository.getReferenceById(dadosMarcaConsulta.idMedico())).willReturn(medico);
         given(pacienteRepository.getReferenceById(dadosMarcaConsulta.idPaciente())).willReturn(paciente);
 
         assertNotNull(consultaService.marcarConsulta(dadosMarcaConsulta));

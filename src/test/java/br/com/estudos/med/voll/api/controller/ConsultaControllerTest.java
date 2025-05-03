@@ -41,6 +41,9 @@ class ConsultaControllerTest {
     private JacksonTester<DadosDetalhamentoConsulta> dadosDetalhamentoConsulta;
 
     @Autowired
+    private JacksonTester<DadosMarcaConsulta> dadosMarcaConsulta;
+
+    @Autowired
     private JacksonTester<DadosCancelaConsulta> dadosCancelamentoConsulta;
 
     @MockitoBean
@@ -68,12 +71,12 @@ class ConsultaControllerTest {
         Medico medico = new Medico();
         medico.setId(1L);
 
-        Consulta consulta = new Consulta(null, paciente, medico, LocalDateTime.now(), null);
+        DadosDetalhamentoConsulta dadosConsulta = new DadosDetalhamentoConsulta(null, 1l, 1l, LocalDateTime.now());
 
-        when(consultaService.marcarConsulta(any())).thenReturn(consulta);
+        when(consultaService.marcarConsulta(any())).thenReturn(dadosConsulta);
 
         var response = mockMvc.perform(post("/consultas").contentType(MediaType.APPLICATION_JSON)
-                        .content(dadosConsulta.write(
+                        .content(dadosMarcaConsulta.write(
                                 new DadosMarcaConsulta(1L,1L, LocalDateTime.now().plusHours(1), Especialidade.CARDIOLOGIA)
                         ).getJson()))
                 .andReturn().getResponse();
@@ -81,7 +84,7 @@ class ConsultaControllerTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 
         var jsonResponse = dadosDetalhamentoConsulta.write(
-                new DadosDetalhamentoConsulta(consulta)
+                dadosConsulta
         ).getJson();
 
         assertThat(response.getContentAsString()).isEqualTo(jsonResponse);
